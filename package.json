@@ -1,0 +1,14 @@
+{
+  "name": "titanium-codemods",
+  "version": "1.0.0",
+  "description": "",
+  "bin": "bin/titanium-codemods.js",
+  "author": "Ewan Harris <ewanharris93@gmail.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cli-kit": "^0.5.2",
+    "eslint": "^5.12.0",
+    "eslint-config-axway": "^4.2.1",
+    "fs-extra": "^7.0.1"
+  }
+}
