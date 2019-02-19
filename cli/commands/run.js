@@ -37,7 +37,7 @@ module.exports = {
 		}
 
 		// Read in out list of transforms
-		const transforms = fs.readdirSync(path.join(__dirname, '..', '..', 'transforms'))
+		const transforms = utils.listTransforms()
 			.map(transform => ({
 				checked: true,
 				name: path.basename(transform, '.js'),

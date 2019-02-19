@@ -1,9 +1,9 @@
 module.exports = {
 	async action ({ _argv }) {
-		const fs = require('fs-extra');
 		const path = require('path');
+		const utils = require('../../lib/utils');
 		// Read in out list of transforms
-		const transforms = fs.readdirSync(path.join(__dirname, '..', '..', 'transforms'))
+		const transforms =  utils.listTransforms()
 			.map(transform => ({
 				name: path.basename(transform, '.js')
 			}));

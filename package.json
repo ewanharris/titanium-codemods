@@ -27,5 +27,8 @@
   "scripts": {
     "lint": "eslint .",
     "test": "jest"
-  }
+  },
+  "homepage": "https://github.com/ewanharris/titanium-codemods",
+  "bugs": "https://github.com/ewanharris/titanium-codemods",
+  "repository": "https://github.com/ewanharris/titanium-codemods"
 }
