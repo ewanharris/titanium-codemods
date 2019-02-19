@@ -1,7 +1,7 @@
 {
   "name": "titanium-codemods",
   "version": "1.0.0",
-  "description": "Titanium SDK codemod scripts",
+  "description": "Codemod scripts for Titanium Applications",
   "bin": "bin/titanium-codemods",
   "author": "Ewan Harris <ewanharris93@gmail.com>",
   "license": "Apache-2.0",
