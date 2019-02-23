@@ -1,3 +1,5 @@
+const chalk = require('chalk');
+
 module.exports = {
 	args: [
 		{
@@ -74,7 +76,7 @@ module.exports = {
 			throw new Error(`Please ensure the sdk version (${sdkVersion}) is installed.`);
 		}
 
-		console.log(`Using ${sdkVersion} for api.jsca file`);
+		console.log(chalk.red(`Using ${sdkVersion} for api.jsca file`));
 
 		// Check if we're codemod-ing an Alloy or Classic project
 		let sourceDir;
@@ -119,7 +121,7 @@ module.exports = {
 
 		// Run the codemods!
 		for (const transform of transformsToRun) {
-			console.log(`Running ${transform.name}`);
+			console.log(chalk.red(`Running ${transform.name}`));
 			await transformFiles({
 				files,
 				transformPath: path.join(__dirname, '..', '..', 'transforms', transform.path),

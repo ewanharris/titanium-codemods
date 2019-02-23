@@ -6,6 +6,7 @@
   "author": "Ewan Harris <ewanharris93@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "chalk": "^2.4.2",
     "cli-kit": "^0.6.2",
     "debug": "^4.1.1",
     "execa": "^1.0.0",
