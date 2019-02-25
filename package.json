@@ -13,6 +13,7 @@
     "fs-extra": "^7.0.1",
     "globby": "^9.0.0",
     "inquirer": "^6.2.1",
+    "jest-diff": "^24.0.0",
     "jscodeshift": "^0.6.2",
     "tiapp-dir": "^1.0.1",
     "tiapp.xml": "^0.2.2",

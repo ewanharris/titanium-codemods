@@ -1,3 +1,5 @@
+const chalk = require('chalk');
+const diff = require('jest-diff');
 const fs = require('fs-extra');
 const path = require('path');
 const tiappDir = require('tiapp-dir');
@@ -9,11 +11,14 @@ let jsca;
 module.exports = function (file, api, options) {
 	let madeChanges = false;
 	let sdkPath;
+	let relativePath;
+
 	if (!options.sdkPath) {
 		const projectDirectory = tiappDir.sync(file.path);
 		const sdkVersion = utils.getSDKVersion(projectDirectory);
 		const sdkInfo = utils.getSDKInfo(sdkVersion);
 		sdkPath = sdkInfo.path;
+		relativePath = path.resolve(projectDirectory, file.path);
 	} else {
 		sdkPath = options.sdkPath;
 	}
@@ -21,6 +26,8 @@ module.exports = function (file, api, options) {
 	jsca = fs.readJSONSync(path.join(sdkPath, 'api.jsca'));
 	const j = api.jscodeshift;
 	const root = j(file.source);
+	const original = root.toSource();
+
 	try {
 		root.find(j.CallExpression)
 			.forEach(convertToPropertyAccess);
@@ -72,7 +79,18 @@ module.exports = function (file, api, options) {
 			);
 		madeChanges = true;
 	}
-	return madeChanges ? root.toSource() : null;
+
+	const changedSource = root.toSource();
+	if (madeChanges && options.dry) {
+		const changes = diff(original, changedSource, {
+			aAnnotation: 'Before',
+			bAnnotation: 'After',
+			expand: false
+		});
+		console.log(`Showing changes for ${chalk.cyan(relativePath)}`);
+		console.log(changes);
+	}
+	return madeChanges ? changedSource : null;
 };
 
 function lookupCall(parent, call) {
