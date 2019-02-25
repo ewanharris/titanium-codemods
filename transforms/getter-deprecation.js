@@ -1,29 +1,23 @@
 const chalk = require('chalk');
 const diff = require('jest-diff');
-const fs = require('fs-extra');
 const path = require('path');
-const tiappDir = require('tiapp-dir');
-const utils = require('../lib/utils.js');
 
-const lookupMap = new Map();
-let jsca;
+const { findTiAppAndSdkVersion, lookupCall, loadJSCA } = require('./utils/transform-utils');
 
 module.exports = function (file, api, options) {
 	let madeChanges = false;
-	let sdkPath;
+	let sdkInfo;
 	let relativePath;
 
 	if (!options.sdkPath) {
-		const projectDirectory = tiappDir.sync(file.path);
-		const sdkVersion = utils.getSDKVersion(projectDirectory);
-		const sdkInfo = utils.getSDKInfo(sdkVersion);
-		sdkPath = sdkInfo.path;
-		relativePath = path.resolve(projectDirectory, file.path);
-	} else {
-		sdkPath = options.sdkPath;
+		const projectInfo = findTiAppAndSdkVersion(file.path);
+		relativePath = path.resolve(projectInfo.projectDirectory, file.path);
+		sdkInfo = projectInfo.sdkInfo;
 	}
 
-	jsca = fs.readJSONSync(path.join(sdkPath, 'api.jsca'));
+	// Check and read in our JSCA file for checking against;
+	loadJSCA(sdkInfo, options);
+
 	const j = api.jscodeshift;
 	const root = j(file.source);
 	const original = root.toSource();
@@ -56,6 +50,7 @@ module.exports = function (file, api, options) {
 		if (!call.name.startsWith('get')) {
 			return;
 		}
+
 		// Look for a potential replacement by looping through the api.jsca file
 		const replacement = lookupCall(object, call.name);
 
@@ -82,73 +77,14 @@ module.exports = function (file, api, options) {
 
 	const changedSource = root.toSource();
 	if (madeChanges && options.dry) {
-		const changes = diff(original, changedSource, {
-			aAnnotation: 'Before',
-			bAnnotation: 'After',
-			expand: false
+		const changes = diff(changedSource, original, {
+			aAnnotation: 'After',
+			bAnnotation: 'Before',
+			expand: false,
+			contextLines: 1
 		});
 		console.log(`Showing changes for ${chalk.cyan(relativePath)}`);
 		console.log(changes);
 	}
 	return madeChanges ? changedSource : null;
 };
-
-function lookupCall(parent, call) {
-	if (lookupMap.has(call)) {
-		return lookupMap.get(call);
-	}
-
-	// TODO: Allow Alloy.Globals.x.get and Alloy.CFG.x.get
-	let namespace = constructNamespace(parent);
-	if (/exports|Alloy|Widget|require/.test(namespace)) {
-		return;
-	}
-	if (!namespace.startsWith('Ti')) {
-		namespace = null;
-	}
-	let replacementCall;
-	for (const api of jsca.types) {
-		if (namespace && namespace !== api.name) {
-			continue;
-		}
-		for (const func of api.functions) {
-			if (func.name === call && func.deprecated) {
-				replacementCall = call.replace(/^get/, '');
-				replacementCall = replacementCall.charAt(0).toLowerCase() + replacementCall.slice(1);
-				lookupMap.set(call, replacementCall);
-			}
-		}
-	}
-
-	return replacementCall;
-}
-
-function constructNamespace(parent) {
-	let apiName;
-	if (parent.type === 'CallExpression') {
-		const callee = parent.callee;
-		if (callee.type === 'MemberExpression') {
-			if (callee.object) {
-				apiName = callee.object.name;
-			}
-
-			if (callee.property) {
-				apiName = `${apiName}.${callee.property.name}`;
-			}
-		} else if (callee.type === 'Identifier') {
-			apiName = callee.name;
-		}
-	} else if (parent.type === 'MemberExpression') {
-		if (parent.object) {
-			apiName = constructNamespace(parent.object);
-		}
-
-		if (parent.property) {
-			apiName = `${apiName}.${parent.property.name}`;
-		}
-	} else if (parent.type === 'Identifier') {
-		apiName = parent.name;
-	}
-
-	return apiName ? apiName.replace(/^Ti\./, 'Titanium.') : null;
-}
