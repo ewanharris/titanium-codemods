@@ -1,5 +1,3 @@
-const chalk = require('chalk');
-
 module.exports = {
 	args: [
 		{
@@ -16,8 +14,9 @@ module.exports = {
 		'--transforms <transform1,transform2>': 'comma separated list of transforms to run'
 	},
 	async action ({ argv }) {
+		const chalk = require('chalk');
 		const fs = require('fs');
-		const inquirer = require('inquirer');
+		const { prompt } = require('enquirer');
 		const globby = require('globby');
 		const path = require('path');
 		const { transformFiles } = require('../transformFiles');
@@ -41,7 +40,6 @@ module.exports = {
 		// Read in out list of transforms
 		const transforms = utils.listTransforms()
 			.map(transform => ({
-				checked: true,
 				name: path.basename(transform, '.js'),
 				value: { name: path.basename(transform, '.js'), path: transform }
 			}));
@@ -50,13 +48,21 @@ module.exports = {
 		// Prompt for what transforms to run if node are given, or default to all if `--run-all` is given.
 		// TODO: Come up with defaults per SDK-line and auto select based off that?
 		if (!runAll && !userTransforms) {
-			const selected = await inquirer.prompt({
-				type: 'checkbox',
-				message: 'Select transforms',
+			const selected = await prompt({
+				type: 'multiselect',
 				name: 'transforms',
-				choices: transforms
+				message: 'Select transforms',
+				choices: transforms,
+				initial: transforms, // set all the transforms as initially selected
+				result(names) {
+					return names.map(name => this.find(name).value);
+				},
+				styles: {
+					em: chalk.cyan
+				}
 			});
-			if (!selected.transforms) {
+			console.log(selected);
+			if (!selected.transforms.length) {
 				console.log('None selected');
 				return;
 			}
@@ -76,7 +82,7 @@ module.exports = {
 			throw new Error(`Please ensure the sdk version (${sdkVersion}) is installed.`);
 		}
 
-		console.log(chalk.red(`Using ${sdkVersion} for api.jsca file`));
+		console.log(`Using ${chalk.cyan(sdkVersion)} for API lookup`);
 
 		// Check if we're codemod-ing an Alloy or Classic project
 		let sourceDir;
@@ -121,7 +127,7 @@ module.exports = {
 
 		// Run the codemods!
 		for (const transform of transformsToRun) {
-			console.log(chalk.red(`Running ${transform.name}`));
+			console.log(`Running ${chalk.cyan(transform.name)}`);
 			await transformFiles({
 				files,
 				transformPath: path.join(__dirname, '..', '..', 'transforms', transform.path),
