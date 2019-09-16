@@ -61,7 +61,7 @@ module.exports = {
 					em: chalk.cyan
 				}
 			});
-			console.log(selected);
+
 			if (!selected.transforms.length) {
 				console.log('None selected');
 				return;
