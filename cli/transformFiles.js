@@ -3,8 +3,8 @@ const path = require('path');
 const debug = require('debug')('titanium-codemods:transform');
 
 async function transformFiles({ files, flags, transformPath }) {
-	const jscodeShiftBin = path.join(path.dirname(require.resolve('jscodeshift')), 'bin', 'jscodeshift.js');
-	const args = [ '-t', transformPath, ...files ];
+	const jscodeShiftBin = require.resolve('.bin/jscodeshift');
+	const args = [ '--ignore-pattern=**/node_modules/**', '--no-babel', '-t', transformPath, ...files ];
 
 	if (flags.dryRun) {
 		args.push('--dry');
