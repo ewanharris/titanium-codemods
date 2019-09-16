@@ -1,17 +1,14 @@
 module.exports = {
-	args: [
-		{
-			name: 'src',
-			desc: 'path to the application directory',
-			required: true
-		}
-	],
 	options: {
 		'--dry-run': 'perform a dry run, not changing any files',
 		'--run-all': 'run all codemods',
 		// FIXME: This should be a multiple that gives us an array.
 		'--exclude <dir1,dir2>': 'comma separated list of directories to exclude, resolved relative to the project directory',
-		'--transforms <transform1,transform2>': 'comma separated list of transforms to run'
+		'--transforms <transform1,transform2>': 'comma separated list of transforms to run',
+		'--project-dir <project-dir>': {
+			desc: 'project directory to run on',
+			default: '.'
+		},
 	},
 	async action ({ argv }) {
 		const chalk = require('chalk');
@@ -27,12 +24,12 @@ module.exports = {
 			dryRun,
 			exclude,
 			runAll,
-			src,
-			transforms: userTransforms
+			transforms: userTransforms,
+			projectDir
 		} = argv;
 
 		// Attempt to resolve the tiapp.xml as a way of project validation
-		const tiappLocation = path.join(src, 'tiapp.xml');
+		const tiappLocation = path.join(projectDir, 'tiapp.xml');
 		if (!fs.existsSync(tiappLocation)) {
 			throw new Error(`tiapp.xml does not exist at ${tiappLocation}. Are you pointing to a valid directory?`);
 		}
@@ -86,12 +83,12 @@ module.exports = {
 
 		// Check if we're codemod-ing an Alloy or Classic project
 		let sourceDir;
-		if (fs.existsSync(path.join(src, 'app'))) {
+		if (fs.existsSync(path.join(projectDir, 'app'))) {
 			// It's an alloy app
-			sourceDir = path.resolve(path.join(src, 'app'));
+			sourceDir = path.resolve(path.join(projectDir, 'app'));
 		} else {
 			// It's a classic app
-			sourceDir = path.resolve(path.join(src, 'Resources'));
+			sourceDir = path.resolve(path.join(projectDir, 'Resources'));
 		}
 
 		// Create the glob pattern used to lookup the files
@@ -100,7 +97,7 @@ module.exports = {
 		if (exclude) {
 			const excludesArray = exclude.split(',');
 			for (const exclude of excludesArray) {
-				const excludePath = path.resolve(path.join(src, exclude));
+				const excludePath = path.resolve(path.join(projectDir, exclude));
 				if (!fs.existsSync(excludePath)) {
 					console.warn(`Unknown exclude path ${excludePath}`);
 					continue;
