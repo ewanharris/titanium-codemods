@@ -9,16 +9,16 @@
     "chalk": "^2.4.2",
     "cli-kit": "^0.12.0",
     "debug": "^4.1.1",
-    "enquirer": "^2.3.1",
-    "execa": "^2.0.4",
+    "enquirer": "^2.3.6",
+    "execa": "^2.1.0",
     "fs-extra": "^8.1.0",
-    "globby": "^10.0.1",
+    "globby": "^10.0.2",
     "jest-diff": "^24.9.0",
     "jscodeshift": "^0.6.4",
     "tiapp-dir": "^1.0.1",
     "tiapp.xml": "^0.2.2",
-    "titaniumlib": "^2.0.0",
-    "v8-compile-cache": "^2.1.0"
+    "titaniumlib": "^2.1.0",
+    "v8-compile-cache": "^2.1.1"
   },
   "devDependencies": {
     "eslint": "^7.7.0",
