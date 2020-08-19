@@ -12,5 +12,5 @@ const cli = new CLI({
 
 cli.exec()
 	.catch(error => {
-		console.log(error);
+		console.log(error)
 	});
