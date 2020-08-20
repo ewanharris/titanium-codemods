@@ -27,11 +27,11 @@ module.exports = {
 			transforms: userTransforms,
 			projectDir
 		} = argv;
-
+		const realProjectDir = path.resolve(projectDir);
 		// Attempt to resolve the tiapp.xml as a way of project validation
-		const tiappLocation = path.join(projectDir, 'tiapp.xml');
+		const tiappLocation = path.join(realProjectDir, 'tiapp.xml');
 		if (!fs.existsSync(tiappLocation)) {
-			throw new Error(`tiapp.xml does not exist at ${tiappLocation}. Are you pointing to a valid directory?`);
+			console.error(`tiapp.xml does not exist at ${tiappLocation}. Are you pointing to a valid directory?`);
 		}
 
 		// Read in out list of transforms
@@ -83,12 +83,12 @@ module.exports = {
 
 		// Check if we're codemod-ing an Alloy or Classic project
 		let sourceDir;
-		if (fs.existsSync(path.join(projectDir, 'app'))) {
+		if (fs.existsSync(path.join(realProjectDir, 'app'))) {
 			// It's an alloy app
-			sourceDir = path.resolve(path.join(projectDir, 'app'));
+			sourceDir = path.resolve(path.join(realProjectDir, 'app'));
 		} else {
 			// It's a classic app
-			sourceDir = path.resolve(path.join(projectDir, 'Resources'));
+			sourceDir = path.resolve(path.join(realProjectDir, 'Resources'));
 		}
 
 		// Create the glob pattern used to lookup the files
@@ -97,7 +97,7 @@ module.exports = {
 		if (exclude) {
 			const excludesArray = exclude.split(',');
 			for (const exclude of excludesArray) {
-				const excludePath = path.resolve(path.join(projectDir, exclude));
+				const excludePath = path.resolve(path.join(realProjectDir, exclude));
 				if (!fs.existsSync(excludePath)) {
 					console.warn(`Unknown exclude path ${excludePath}`);
 					continue;
