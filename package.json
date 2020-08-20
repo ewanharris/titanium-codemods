@@ -6,25 +6,25 @@
   "author": "Ewan Harris <ewanharris93@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "chalk": "^2.4.2",
-    "cli-kit": "^0.12.0",
+    "chalk": "^4.1.0",
+    "cli-kit": "^1.7.0",
     "debug": "^4.1.1",
     "enquirer": "^2.3.6",
-    "execa": "^2.1.0",
-    "fs-extra": "^8.1.0",
-    "globby": "^10.0.2",
-    "jest-diff": "^24.9.0",
-    "jscodeshift": "^0.6.4",
+    "execa": "^4.0.3",
+    "fs-extra": "^9.0.1",
+    "globby": "^11.0.1",
+    "jest-diff": "^26.4.0",
+    "jscodeshift": "^0.10.0",
     "tiapp-dir": "^1.0.1",
     "tiapp.xml": "^0.2.2",
-    "titaniumlib": "^2.1.0",
+    "titaniumlib": "^3.0.0",
     "v8-compile-cache": "^2.1.1"
   },
   "devDependencies": {
     "eslint": "^7.7.0",
     "eslint-config-axway": "^4.7.1",
     "eslint-plugin-jest": "^23.20.0",
-    "jest": "^26.4.0"
+    "jest": "^26.4.1"
   },
   "scripts": {
     "lint": "eslint .",
