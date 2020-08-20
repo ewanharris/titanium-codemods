@@ -3,9 +3,9 @@ module.exports = {
 		'--dry-run': 'perform a dry run, not changing any files',
 		'--run-all': 'run all codemods',
 		// FIXME: This should be a multiple that gives us an array.
-		'--exclude <dir1,dir2>': 'comma separated list of directories to exclude, resolved relative to the project directory',
-		'--transforms <transform1,transform2>': 'comma separated list of transforms to run',
-		'--project-dir <project-dir>': {
+		'--exclude [dir1,dir2]': 'comma separated list of directories to exclude, resolved relative to the project directory',
+		'--transforms [transform1,transform2]': 'comma separated list of transforms to run',
+		'--project-dir [project-dir]': {
 			desc: 'project directory to run on',
 			default: '.'
 		},
