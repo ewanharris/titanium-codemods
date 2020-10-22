@@ -9,6 +9,10 @@ module.exports = {
 			desc: 'project directory to run on',
 			default: '.'
 		},
+		'--force': {
+			desc: 'force running of the changes even if uncommited changes exist in the directory',
+			default: false
+		}
 	},
 	async action ({ argv }) {
 		const chalk = require('chalk');
@@ -32,6 +36,15 @@ module.exports = {
 		const tiappLocation = path.join(realProjectDir, 'tiapp.xml');
 		if (!fs.existsSync(tiappLocation)) {
 			console.error(`tiapp.xml does not exist at ${tiappLocation}. Are you pointing to a valid directory?`);
+			process.exitCode = 1;
+			return;
+		}
+
+		if (!utils.hasGitChanges(realProjectDir) && !force) {
+			console.error(`Uncommited changes at ${realProjectDir}, please commit or stash your changes`);
+			console.error('Alternatively you can run with "--force" to override this check');
+			process.exitCode = 1;
+			return;
 		}
 
 		// Read in out list of transforms
