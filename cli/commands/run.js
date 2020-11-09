@@ -27,6 +27,7 @@ module.exports = {
 		const {
 			dryRun,
 			exclude,
+			force,
 			runAll,
 			transforms: userTransforms,
 			projectDir
@@ -40,7 +41,7 @@ module.exports = {
 			return;
 		}
 
-		if (!utils.hasGitChanges(realProjectDir) && !force) {
+		if (await utils.hasGitChanges(realProjectDir) && !force) {
 			console.error(`Uncommited changes at ${realProjectDir}, please commit or stash your changes`);
 			console.error('Alternatively you can run with "--force" to override this check');
 			process.exitCode = 1;
