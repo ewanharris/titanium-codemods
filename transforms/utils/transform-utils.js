@@ -59,8 +59,11 @@ function lookupCall(parent, call) {
 			continue;
 		}
 		for (const func of api.functions) {
-			if (func.name === call && func.deprecated) {
-				replacementCall = call.replace(/^(get|set)/, '');
+			// "is" based APIs were never actually marked as deprecated in the JSCA files so always
+			// assume they are deprecated. I'm sure that'll be fine right...right???
+			const deprecated = func.name.startsWith('is') ? true : func.deprecated;
+			if (func.name === call && deprecated) {
+				replacementCall = call.replace(/^(get|set|is)/, '');
 				replacementCall = replacementCall.charAt(0).toLowerCase() + replacementCall.slice(1);
 				lookupMap.set(call, replacementCall);
 			}

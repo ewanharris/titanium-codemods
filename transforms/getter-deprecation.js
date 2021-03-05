@@ -47,7 +47,7 @@ module.exports = function (file, api, options) {
 		}
 
 		// We only care about getters
-		if (!call.name.startsWith('get')) {
+		if (!(call.name.startsWith('get') || call.name.startsWith('is'))) {
 			return;
 		}
 
